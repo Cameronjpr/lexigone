@@ -24,6 +24,7 @@ func main() {
 	tally := getKeys(args[0])
 
 	for k := range tally {
+		fmt.Println("Searching for", k)
 		search(args[1], k, tally)
 	}
 
