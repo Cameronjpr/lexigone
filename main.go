@@ -12,33 +12,26 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) < 1 {
-		fmt.Println("Please provide a directory")
+		fmt.Println("Please provide a lang directory")
+		os.Exit(1)
+	}
+
+	if len(args) < 2 {
+		fmt.Println("Please provide a search directory")
 		os.Exit(1)
 	}
 
 	tally := getKeys(args[0])
 
 	for k := range tally {
-		cmd := exec.Command("grep", "-r", k, args[1])
-		_, err := cmd.Output()
-
-		if err != nil {
-			continue
-		}
-
-		tally[k]++
+		search(args[1], k, tally)
 	}
 
-	unused := make(map[string]int, len(tally))
-
+	fmt.Println("Unused keys:")
 	for k, v := range tally {
 		if v == 0 {
-			unused[k] = v
+			fmt.Printf("%s\n", k)
 		}
-	}
-
-	for k := range unused {
-		fmt.Printf("%s\n", k)
 	}
 }
 
@@ -52,9 +45,24 @@ func check(e error) {
 	}
 }
 
+func search(dir string, key string, tally map[string]int) bool {
+	cmd := exec.Command("grep", "-r", key, dir)
+	_, err := cmd.Output()
+
+	if err != nil {
+		return false
+	}
+
+	tally[key]++
+
+	return true
+}
+
 func getKeys(dir string) (keys map[string]int) {
 	files, err := os.ReadDir(dir)
 	check(err)
+
+	keys = make(map[string]int)
 
 	for _, file := range files {
 		if strings.Split(file.Name(), ".")[1] != "json" {
@@ -68,7 +76,6 @@ func getKeys(dir string) (keys map[string]int) {
 		check(err)
 
 		m := data.(map[string]interface{})
-		keys = make(map[string]int, len(m))
 
 		for k := range m {
 			keys[k] = 0
