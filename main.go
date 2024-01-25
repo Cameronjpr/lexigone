@@ -21,7 +21,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	tally := getKeys(args[0])
+	keys := make(map[string]int)
+	tally := getKeys(args[0], keys)
 
 	for k := range tally {
 		fmt.Println("Searching for", k)
@@ -59,13 +60,18 @@ func search(dir string, key string, tally map[string]int) bool {
 	return true
 }
 
-func getKeys(dir string) (keys map[string]int) {
+func getKeys(dir string, keys map[string]int) map[string]int {
 	files, err := os.ReadDir(dir)
 	check(err)
 
-	keys = make(map[string]int)
-
 	for _, file := range files {
+		if file.IsDir() {
+			fmt.Println("Searching", dir+"/"+file.Name())
+			getKeys(dir+"/"+file.Name(), keys)
+			continue
+		}
+
+		fmt.Println("Reading", dir+"/"+file.Name())
 		if strings.Split(file.Name(), ".")[1] != "json" {
 			continue
 		}
