@@ -36,6 +36,20 @@ func main() {
 	wg.Wait()
 
 	fmt.Printf("Found \033[0;31m%d\033[0m unused keys.\n", len(unused))
+	fmt.Print("Would you like to remove them? (y/n) ")
+
+	var response string
+
+	fmt.Scan(&response)
+
+	if response == "y" {
+		for _, k := range unused {
+			fmt.Printf("Removing %s\n", k)
+			// TODO: Remove key from file
+		}
+	} else {
+		fmt.Println("Exiting...")
+	}
 }
 
 func check(e error) {
