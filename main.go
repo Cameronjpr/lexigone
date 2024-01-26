@@ -29,10 +29,11 @@ func main() {
 		search(args[1], k, tally)
 	}
 
+	fmt.Println("")
 	fmt.Println("Unused keys:")
 	for k, v := range tally {
 		if v == 0 {
-			fmt.Printf("%s\n", k)
+			fmt.Printf("\033[0;31m%s\n\033[0m", k)
 		}
 	}
 }
@@ -48,12 +49,16 @@ func check(e error) {
 }
 
 func search(dir string, key string, tally map[string]int) bool {
-	cmd := exec.Command("grep", "-r", key, dir)
-	_, err := cmd.Output()
+	cmd := fmt.Sprintf("grep -r --exclude='*.json' %s %s", key, dir)
+	ex := exec.Command("bash", "-c", cmd)
+
+	_, err := ex.CombinedOutput()
 
 	if err != nil {
 		return false
 	}
+
+	fmt.Println("Found", key)
 
 	tally[key]++
 
