@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-func getAllKeys(dir string) []string {
+func getAllKeys(dir string) map[string]string {
 	fileSystem := os.DirFS(dir)
-	keys := []string{}
+	keys := make(map[string]string)
 
 	fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, e error) error {
 		if !strings.HasSuffix(path, ".json") {
@@ -30,7 +30,7 @@ func getAllKeys(dir string) []string {
 		m := data.(map[string]interface{})
 
 		for k := range m {
-			keys = append(keys, k)
+			keys[k] = path
 		}
 
 		return nil

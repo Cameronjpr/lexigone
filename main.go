@@ -22,24 +22,20 @@ func main() {
 	total := getAllKeys(args[0])
 	unused := make([]string, 0)
 
-	for _, v := range total {
+	for k, v := range total {
 		wg.Add(1)
-		go func(v string) {
-			found := search(os.Args[2], v)
-			fmt.Println(v, found)
-			if !search(os.Args[2], v) {
-				unused = append(unused, v)
+		go func(k, v string) {
+			if !search(os.Args[2], k) {
+				unused = append(unused, k)
+				fmt.Printf("\033[0;31m%s\033[0m in %s\n", k, v)
 			}
 			wg.Done()
-		}(v)
+		}(k, v)
 	}
 
 	wg.Wait()
 
-	for _, v := range unused {
-		fmt.Printf("Key \033[0;31m%s\033[0m is unused.\n", v)
-	}
-
+	fmt.Printf("Found \033[0;31m%d\033[0m unused keys.\n", len(unused))
 }
 
 func check(e error) {

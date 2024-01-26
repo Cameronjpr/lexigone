@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"io"
 	"io/fs"
 	"os"
-	"os/exec"
 	"strings"
 )
 
@@ -29,12 +29,24 @@ func search(dir, key string) bool {
 			return nil
 		}
 
-		cmd := exec.Command("grep", key, cleanPath(path))
-		_, err := cmd.Output()
+		f, err := os.Open(path)
 
-		if err == nil {
-			found = true
-			return io.EOF
+		if err != nil {
+			return err
+		}
+
+		defer f.Close()
+
+		scanner := bufio.NewScanner(f)
+		line := 1
+
+		for scanner.Scan() {
+			if strings.Contains(scanner.Text(), key) {
+				found = true
+				return io.EOF
+			}
+
+			line++
 		}
 
 		return nil
