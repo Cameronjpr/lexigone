@@ -1,3 +1,5 @@
 function Component() {
-  return <LocalisedText id="key_2" />
+  return (
+    <LocalisedText id="dashboard_actions_referrals_dialog_trigger_cta_description" />
+  )
 }
