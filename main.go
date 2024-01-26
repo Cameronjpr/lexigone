@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"sync"
 )
+
+var wg sync.WaitGroup
 
 func main() {
 	args := os.Args[1:]
@@ -17,44 +20,26 @@ func main() {
 	}
 
 	total := getAllKeys(args[0])
+	unused := make([]string, 0)
 
-	fmt.Println("Total keys:", len(total))
-
-	jobs := make(chan string, len(total))
-	results := make(chan string, len(total))
-
-	for w := 1; w <= 3; w++ {
-		go worker(jobs, results)
+	for _, v := range total {
+		wg.Add(1)
+		go func(v string) {
+			found := search(os.Args[2], v)
+			fmt.Println(v, found)
+			if !search(os.Args[2], v) {
+				unused = append(unused, v)
+			}
+			wg.Done()
+		}(v)
 	}
 
-	for k := range total {
-		jobs <- total[k]
-		fmt.Println("Sent job", total[k])
-	}
-	close(jobs)
+	wg.Wait()
 
-	for i := 0; i < len(total); i++ {
-		k := <-results
-
-		if k == "" {
-			continue
-		}
-
-		fmt.Printf("Key \033[0;31m%s\033[0m is unused.\n", k)
+	for _, v := range unused {
+		fmt.Printf("Key \033[0;31m%s\033[0m is unused.\n", v)
 	}
 
-}
-
-func worker(jobs <-chan string, results chan<- string) {
-	fmt.Println("Worker started")
-	for k := range jobs {
-		if search(os.Args[2], k) {
-			results <- ""
-			continue
-		}
-
-		results <- k
-	}
 }
 
 func check(e error) {
