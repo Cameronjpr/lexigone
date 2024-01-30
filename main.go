@@ -20,13 +20,13 @@ func main() {
 	}
 
 	total := getAllKeys(args[0])
-	unused := make([]string, 0)
+	unused := make(map[string]string)
 
 	for k, v := range total {
 		wg.Add(1)
 		go func(k, v string) {
 			if !search(os.Args[2], k) {
-				unused = append(unused, k)
+				unused[k] = v
 				fmt.Printf("\033[0;31m%s\033[0m in %s\n", k, v)
 			}
 			wg.Done()
@@ -35,20 +35,11 @@ func main() {
 
 	wg.Wait()
 
-	fmt.Print("Would you like to remove them? (y/n) ")
-
-	var response string
-
-	fmt.Scan(&response)
-
-	if response == "y" {
-		for _, k := range unused {
-			fmt.Printf("Removing %s\n", k)
-			// TODO: Remove key from file
-		}
-	} else {
-		fmt.Println("Exiting...")
+	for k, p := range unused {
+		fmt.Printf("Removing %s\n", k)
+		prune(p, k)
 	}
+
 }
 
 func check(e error) {

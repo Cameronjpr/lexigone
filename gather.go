@@ -30,7 +30,7 @@ func getAllKeys(dir string) map[string]string {
 		m := data.(map[string]interface{})
 
 		for k := range m {
-			keys[k] = path
+			keys[k] = dir + "/" + path
 		}
 
 		return nil
