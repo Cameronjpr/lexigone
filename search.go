@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bufio"
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -34,24 +34,20 @@ func search(dir, key string) bool {
 			return nil
 		}
 
-		f, err := os.Open(path)
+		f, err := fs.ReadFile(fileSystem, path)
 
 		if err != nil {
+			fmt.Print(err)
 			return err
 		}
 
-		defer f.Close()
+		for _, line := range strings.Split(string(f), "\n") {
+			if strings.Contains(line, key) {
 
-		scanner := bufio.NewScanner(f)
-		line := 1
-
-		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), key) {
 				found = true
+				fmt.Printf("Found %s in %s\n", key, path)
 				return io.EOF
 			}
-
-			line++
 		}
 
 		return nil
