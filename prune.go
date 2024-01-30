@@ -9,7 +9,7 @@ import (
 )
 
 func prune(path, key string) {
-	f, err := os.Open(path)
+	f, err := os.OpenFile(path, os.O_RDWR, 0644)
 
 	if err != nil {
 		fmt.Print(err)
@@ -24,9 +24,6 @@ func prune(path, key string) {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		fmt.Println(line)
-		fmt.Println(key)
-
 		if !strings.Contains(line, key) {
 			_, err := buf.WriteString(line + "\n")
 
@@ -38,5 +35,9 @@ func prune(path, key string) {
 
 	f.Truncate(0)
 	f.Seek(0, 0)
-	buf.WriteTo(f)
+	_, err = buf.WriteTo(f)
+
+	if err != nil {
+		fmt.Print(err)
+	}
 }
