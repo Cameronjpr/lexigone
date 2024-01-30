@@ -24,8 +24,6 @@ func main() {
 		panic("Please provide a directory to search with `-search`")
 	}
 
-	fmt.Println(*langDirFlag, *searchDirFlag)
-
 	total := getAllKeys(*langDirFlag)
 	unused := sync.Map{}
 
@@ -39,8 +37,6 @@ func main() {
 			wg.Done()
 		}(k, v)
 	}
-
-	fmt.Println(*cFlag, *cleanFlag)
 
 	wg.Wait()
 
