@@ -25,7 +25,11 @@ func getAllKeys(dir string) map[string]string {
 
 		var data interface{}
 		err := json.Unmarshal(fileBytes, &data)
-		check(err)
+
+		if err != nil {
+			fmt.Printf("Error parsing %s: %s\n", path, err)
+			return nil
+		}
 
 		m := data.(map[string]interface{})
 
