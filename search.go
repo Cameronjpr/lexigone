@@ -13,14 +13,6 @@ func shouldSearchFile(filename string) bool {
 	return strings.HasSuffix(filename, ".jsx") || strings.HasSuffix(filename, ".tsx") || strings.HasSuffix(filename, ".js") || strings.HasSuffix(filename, ".ts")
 }
 
-func cleanPath(path string) string {
-	b1 := strings.ReplaceAll(path, "[", "\\[")
-	b2 := strings.ReplaceAll(b1, "]", "\\]")
-	b3 := strings.ReplaceAll(b2, "(", "\\(")
-	b4 := strings.ReplaceAll(b3, ")", "\\)")
-	return b4
-}
-
 func search(dir, key string) bool {
 	fileSystem := os.DirFS(dir)
 	found := false
