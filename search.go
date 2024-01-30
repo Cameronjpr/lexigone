@@ -45,7 +45,6 @@ func search(dir, key string) bool {
 			if strings.Contains(line, key) {
 
 				found = true
-				fmt.Printf("Found %s in %s\n", key, path)
 				return io.EOF
 			}
 		}

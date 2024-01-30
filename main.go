@@ -35,9 +35,6 @@ func main() {
 
 	wg.Wait()
 
-	fmt.Println("Finished waiting")
-
-	fmt.Printf("Found \033[0;31m%d\033[0m unused keys.\n", len(unused))
 	fmt.Print("Would you like to remove them? (y/n) ")
 
 	var response string

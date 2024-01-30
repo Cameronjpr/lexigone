@@ -36,6 +36,6 @@ func getAllKeys(dir string) map[string]string {
 		return nil
 	})
 
-	fmt.Printf("Found %d keys\n", len(keys))
+	fmt.Printf("Searching for %d keys\n", len(keys))
 	return keys
 }
