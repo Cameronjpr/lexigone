@@ -4,4 +4,4 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - run: lexigone src/lang src/ --clean
+      - run: ./lexigone src/lang src/ --clean
