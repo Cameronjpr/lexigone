@@ -3,10 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"sync"
 )
-
-var wg sync.WaitGroup
 
 func main() {
 	var langDirFlag = flag.String("lang", "", "The directory containing the language files")
@@ -25,33 +22,13 @@ func main() {
 	}
 
 	total := getAllKeys(*langDirFlag)
-	unused := sync.Map{}
-
-	for k, v := range total {
-		wg.Add(1)
-		go func(k, v string) {
-			if !search(*searchDirFlag, k) {
-				unused.Store(k, v)
-				fmt.Printf("\033[0;31m%s\033[0m in %s\n", k, v)
-			}
-			wg.Done()
-		}(k, v)
-	}
-
-	wg.Wait()
+	unused := findUnused(*searchDirFlag, total)
 
 	if *cFlag || *cleanFlag {
-		unused.Range(func(key, value interface{}) bool {
-			k, ok1 := key.(string)
-			p, ok2 := value.(string)
-			if !ok1 || !ok2 {
-				// handle the case where key or value are not of type string
-				return false
-			}
+		for k, v := range unused {
 			fmt.Printf("Removing %s\n", k)
-			prune(p, k)
-			return true
-		})
+			prune(v, k)
+		}
 	}
 
 }

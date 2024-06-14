@@ -26,6 +26,6 @@ jobs:
   run:
     runs-on: ubuntu-latest
     needs: build
-    steps:  
+    steps:
     - name: Prune
       run: ./lexigone --lang=src/lang --search=src/

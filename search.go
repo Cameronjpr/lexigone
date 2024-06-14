@@ -2,22 +2,28 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"io/fs"
 	"log"
 	"os"
 	"strings"
+	"sync"
 )
 
-func shouldSearchFile(filename string) bool {
-	return strings.HasSuffix(filename, ".jsx") || strings.HasSuffix(filename, ".tsx") || strings.HasSuffix(filename, ".js") || strings.HasSuffix(filename, ".ts")
+var wg sync.WaitGroup
+
+func shouldSearchFile(path string) bool {
+	if strings.Contains(path, "node_modules") {
+		return false
+	}
+
+	return strings.HasSuffix(path, ".jsx") || strings.HasSuffix(path, ".tsx") || strings.HasSuffix(path, ".js") || strings.HasSuffix(path, ".ts")
 }
 
-func search(dir, key string) bool {
+func findUnused(dir string, keys map[string]string) map[string]string {
 	fileSystem := os.DirFS(dir)
-	found := false
 
 	fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, e error) error {
+		fmt.Println("searching:", path)
 		if e != nil {
 			log.Fatal(e)
 		}
@@ -34,15 +40,24 @@ func search(dir, key string) bool {
 		}
 
 		for _, line := range strings.Split(string(f), "\n") {
-			if strings.Contains(line, key) {
-
-				found = true
-				return io.EOF
+			for k := range keys {
+				if strings.Contains(line, k) {
+					keys[k] = ""
+				}
 			}
 		}
 
 		return nil
 	})
 
-	return found
+	unused := make(map[string]string)
+
+	for k, v := range keys {
+
+		if v != "" {
+			unused[k] = v
+		}
+	}
+
+	return unused
 }
